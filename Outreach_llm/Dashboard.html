@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>SocialAI - Personalized Social Media LLM</title>
+    <link rel="stylesheet" href="css/dashboard-style.css?v=2.1">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <!-- Language Selector moved to header -->
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg viewBox="0 0 100 100" width="32" height="32">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M 30 50 Q 50 30 70 50 Q 50 70 30 50" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="50" cy="50" r="6" fill="currentColor"/>
+                    </svg>
+                    <span>OutReachAI</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="chat" data-i18n="nav_chat">
+                    <i class="fas fa-comments"></i>
+                    <span>New Chat</span>
+                </a>
+                <a href="#" class="nav-item" data-section="social" data-i18n="nav_social">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Social Apps</span>
+                </a>
+                <a href="analytics.html" class="nav-item" data-section="analytics" data-i18n="nav_analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Settings & Theme -->
+            <div class="sidebar-footer">
+                <button class="theme-toggle-btn" id="dashboardThemeToggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                    <span data-i18n="dark_mode">Dark Mode</span>
+                </button>
+                <button class="settings-btn" id="settingsBtn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                    <span data-i18n="settings">Settings</span>
+                </button>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span data-i18n="logout">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1 id="welcomeText" data-i18n="welcome">Welcome, User! 👋</h1>
+                    <p id="subheaderText" data-i18n="subheader">Your AI-powered social media assistant</p>
+                </div>
+                <div class="header-right">
+                    <div class="language-selector">
+                        <button class="lang-btn" data-lang="en" title="English">EN</button>
+                        <button class="lang-btn" data-lang="hi" title="हिंदी">HI</button>
+                        <button class="lang-btn" data-lang="mr" title="मराठी">MR</button>
+                    </div>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search..." data-i18n-placeholder="search">
+                    </div>
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div class="user-profile">
+                        <button class="profile-btn" id="profileBtn">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" alt="User Avatar">
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Chat Section -->
+            <div class="content-section active" id="chatSection">
+                <div class="chat-area">
+                    <!-- Connected Apps Overview -->
+                    <div class="connected-apps-overview">
+                        <h3 data-i18n="connected_apps">Connected to Your Social Profiles</h3>
+                        <div class="apps-quick-stats">
+                            <div class="quick-stat">
+                                <i class="fab fa-whatsapp"></i>
+                                <div>
+                                    <span class="stat-value">WhatsApp</span>
+                                    <span class="stat-label" data-i18n="chats">Chats</span>
+                                </div>
+                            </div>
+                            <div class="quick-stat">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <span class="stat-value">Emails</span>
+                                    <span class="stat-label" data-i18n="emails">mails</span>
+                                </div>
+                            </div>
+                            <div class="quick-stat">
+                                <i class="fab fa-linkedin"></i>
+                                <div>
+                                    <span class="stat-value">Linkedin</span>
+                                    <span class="stat-label" data-i18n="messages">Messages</span>
+                                </div>
+                            </div>
+                            <div class="quick-stat">
+                                <i class="fab fa-instagram"></i>
+                                <div>
+                                    <span class="stat-value">Instagram</span>
+                                    <span class="stat-label" data-i18n="dms">DMs</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Messages Area -->
+                    <div class="messages-container" id="messagesContainer">
+                        <div class="message ai-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-bubble">
+                                <p data-i18n="ai_greeting">Hello! 👋 I'm your AI assistant for managing all your social media. I can help you draft messages, analyze engagement, and more.</p>
+                                <p style="margin-top: 12px;" data-i18n="what_help">What can I help you with today?</p>
+                                <div class="message-time" data-i18n="just_now">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="input-area">
+                        <div class="input-wrapper">
+                            <button class="input-action-btn" title="Attach file">
+                                <i class="fas fa-paperclip"></i>
+                            </button>
+                            <textarea 
+                                id="messageInput" 
+                                placeholder="Type your question..."
+                                data-i18n-placeholder="type_question"
+                                rows="1"
+                            ></textarea>
+                            <button class="input-action-btn" title="Emoji">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                        </div>
+                        <button class="send-btn" id="sendBtn" title="Send message">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Apps Section -->
+            <div class="content-section" id="socialSection">
+                <div class="social-apps-grid">
+                    <div class="app-card whatsapp">
+                        <div class="app-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <h3>WhatsApp</h3>
+                        <p data-i18n="manage_whatsapp">Manage your WhatsApp conversations</p>
+                        <div class="app-stats">
+                            <span>42 chats</span>
+                        </div>
+                        <button class="app-btn" data-i18n="open">Open</button>
+                    </div>
+
+                    <div class="app-card email">
+                        <div class="app-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email</h3>
+                        <p data-i18n="manage_email">Draft and manage your emails smartly</p>
+                        <div class="app-stats">
+                            <span>128 emails</span>
+                        </div>
+                        <button class="app-btn" data-i18n="open">Open</button>
+                    </div>
+
+                    <div class="app-card linkedin">
+                        <div class="app-icon">
+                            <i class="fab fa-linkedin"></i>
+                        </div>
+                        <h3>LinkedIn</h3>
+                        <p data-i18n="manage_linkedin">Compose posts and messages</p>
+                        <div class="app-stats">
+                            <span>12 messages</span>
+                        </div>
+                        <button class="app-btn" data-i18n="open">Open</button>
+                    </div>
+
+                    <div class="app-card instagram">
+                        <div class="app-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <h3>Instagram</h3>
+                        <p data-i18n="manage_instagram">Smart DM and caption suggestions</p>
+                        <div class="app-stats">
+                            <span>89 DMs</span>
+                        </div>
+                        <button class="app-btn" data-i18n="open">Open</button>
+                    </div>
+
+                    <div class="app-card twitter">
+                        <div class="app-icon">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <h3>Twitter/X</h3>
+                        <p data-i18n="manage_twitter">Compose tweets and threads</p>
+                        <div class="app-stats">
+                            <span>34 messages</span>
+                        </div>
+                        <button class="app-btn" data-i18n="open">Open</button>
+                    </div>
+
+                    <div class="app-card sms">
+                        <div class="app-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <h3>SMS</h3>
+                        <p data-i18n="manage_sms">Compose and manage SMS</p>
+                        <div class="app-stats">
+                            <span>56 messages</span>
+                        </div>
+                        <button class="app-btn" data-i18n="open">Open</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <!-- <div class="content-section" id="analyticsSection">
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3 data-i18n="engagement_analysis">Engagement Analysis</h3>
+                        <div class="mastery-list">
+                            <div class="mastery-item">
+                                <span>WhatsApp</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 85%"></div>
+                                </div>
+                                <span class="percent">85%</span>
+                            </div>
+                            <div class="mastery-item">
+                                <span>Email</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 72%"></div>
+                                </div>
+                                <span class="percent">72%</span>
+                            </div>
+                            <div class="mastery-item">
+                                <span>LinkedIn</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 65%"></div>
+                                </div>
+                                <span class="percent">65%</span>
+                            </div>
+                            <div class="mastery-item">
+                                <span>Instagram</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 58%"></div>
+                                </div>
+                                <span class="percent">58%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3 data-i18n="social_stats">Social Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-comments"></i>
+                                <div>
+                                    <p class="stat-value">267</p>
+                                    <p class="stat-name" data-i18n="total_messages">Total Messages</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-user-friends"></i>
+                                <div>
+                                    <p class="stat-value">542</p>
+                                    <p class="stat-name" data-i18n="contacts">Contacts</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-heart"></i>
+                                <div>
+                                    <p class="stat-value">1.2K</p>
+                                    <p class="stat-name" data-i18n="engagement">Engagement</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-trending-up"></i>
+                                <div>
+                                    <p class="stat-value">+24%</p>
+                                    <p class="stat-name" data-i18n="growth">Growth</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div> -->
+    
+
+    <!-- Modal for Settings -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="settings">Settings</h2>
+                <button class="modal-close" onclick="closeModal('settingsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3 data-i18n="preferences">Preferences</h3>
+                    <div class="setting-item">
+                        <label for="notificationToggle" data-i18n="enable_notif">Enable Notifications</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="notificationToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label for="emailToggle" data-i18n="email_updates">Email Updates</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="emailToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Profile -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="profile">Profile</h2>
+                <button class="modal-close" onclick="closeModal('profileModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-section">
+                    <div class="profile-header">
+                        <img id="profileImg" src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" alt="Profile">
+                        <div>
+                            <h3 id="profileName">User Name</h3>
+                            <p id="profileEmail">user@example.com</p>
+                        </div>
+                    </div>
+                    <button class="edit-profile-btn" data-i18n="edit_profile">Edit Profile</button>
+
+                    <!-- Chat History in Profile -->
+                    <div class="chat-history-section">
+                        <h4 data-i18n="chat_history">Chat History</h4>
+                        <div class="history-list" id="profileHistoryList">
+                            <div class="history-item">
+                                <i class="fas fa-message"></i>
+                                <span data-i18n="history_1">How to write professional emails</span>
+                            </div>
+                            <div class="history-item">
+                                <i class="fas fa-message"></i>
+                                <span data-i18n="history_2">LinkedIn profile optimization</span>
+                            </div>
+                            <div class="history-item">
+                                <i class="fas fa-message"></i>
+                                <span data-i18n="history_3">Instagram caption ideas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

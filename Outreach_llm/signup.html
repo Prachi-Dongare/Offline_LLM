@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SocialAI - Sign In / Sign Up</title>
+    <link rel="stylesheet" href="css/auth-style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Floating Shapes Background -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="auth-wrapper">
+        <!-- Left Side - Brand Info -->
+        <div class="brand-panel">
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 100 100" width="80" height="80">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M 30 50 Q 50 30 70 50 Q 50 70 30 50" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="50" cy="50" r="6" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h1 class="brand-title">OutReachAI</h1>
+                <p class="brand-tagline">Your AI-powered social media assistant</p>
+                
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Smart Chat</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Connected Profiles</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>100% Secure</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-robot"></i>
+                        <span>AI Powered</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Sliding Forms -->
+        <div class="forms-panel">
+            <div class="slider-container">
+                <div class="slider-track" id="sliderTrack">
+                    <!-- Sign In Form -->
+                    <div class="form-slide signin-slide">
+                        <div class="form-box">
+                            <div class="form-header">
+                                <h2>Welcome Back</h2>
+                                <p>Sign in to continue to SocialAI</p>
+                            </div>
+
+                            <form id="signinForm" class="auth-form">
+                                <div class="input-group">
+                                    <label>Email Address</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-envelope"></i>
+                                        <input type="email" id="signinEmail" placeholder="Enter your email" required />
+                                    </div>
+                                </div>
+
+                                <div class="input-group">
+                                    <label>Password</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-lock"></i>
+                                        <input type="password" id="signinPassword" placeholder="Enter your password" required />
+                                        <button type="button" class="toggle-password" onclick="togglePassword('signinPassword')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-options">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="rememberMe" />
+                                        <span class="checkmark"></span>
+                                        Remember me
+                                    </label>
+                                    <a href="#" class="forgot-link">Forgot password?</a>
+                                </div>
+
+                                <button type="submit" class="btn-primary">Sign In</button>
+
+                                <div class="form-footer">
+                                    <p>Don't have an account? <button type="button" class="link-btn" onclick="switchToSignup()">Create one</button></p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Sign Up Form -->
+                    <div class="form-slide signup-slide">
+                        <div class="form-box">
+                            <div class="form-header">
+                                <h2>Create Account</h2>
+                                <p>Join millions using SocialAI today</p>
+                            </div>
+
+                            <form id="signupForm" class="auth-form">
+                                <div class="input-group">
+                                    <label>Full Name</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-user"></i>
+                                        <input type="text" id="signupName" placeholder="Enter your full name" required />
+                                    </div>
+                                </div>
+
+                                <div class="input-group">
+                                    <label>Email Address</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-envelope"></i>
+                                        <input type="email" id="signupEmail" placeholder="Enter your email" required />
+                                    </div>
+                                </div>
+
+                                <div class="input-group">
+                                    <label>Password</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-lock"></i>
+                                        <input type="password" id="signupPassword" placeholder="Create a password (min 8 characters)" required />
+                                        <button type="button" class="toggle-password" onclick="togglePassword('signupPassword')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="input-group">
+                                    <label>Confirm Password</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-lock"></i>
+                                        <input type="password" id="signupConfirmPassword" placeholder="Confirm your password" required />
+                                        <button type="button" class="toggle-password" onclick="togglePassword('signupConfirmPassword')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-options">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="agreeTerms" required />
+                                        <span class="checkmark"></span>
+                                        I agree to <a href="#">Terms & Conditions</a>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="btn-primary">Create Account</button>
+
+                                <div class="form-footer">
+                                    <p>Already have an account? <button type="button" class="link-btn" onclick="switchToSignin()">Sign In</button></p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slider Navigation Dots -->
+            <div class="slider-nav">
+                <button class="nav-dot active" data-slide="0" onclick="switchToSignin()"></button>
+                <button class="nav-dot" data-slide="1" onclick="switchToSignup()"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText"></span>
+    </div>
+
+    <script src="js/signup.js"></script>
+    
+    <!-- Check if already logged in -->
+    <script>
+        // Check authentication status
+        (function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                // User is already logged in, redirect to dashboard
+                window.location.href = 'Dashboard.html';
+            }
+        })();
+    </script>
+</body>
+</html>

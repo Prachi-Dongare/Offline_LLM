@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Analytics - OutReachAI</title>
+    <link rel="stylesheet" href="css/dashboard-style.css?v=2.1">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg viewBox="0 0 100 100" width="32" height="32">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M 30 50 Q 50 30 70 50 Q 50 70 30 50" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="50" cy="50" r="6" fill="currentColor"/>
+                    </svg>
+                    <span>OutReachAI</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="Dashboard.html" class="nav-item" data-section="chat" data-i18n="nav_chat">
+                    <i class="fas fa-comments"></i>
+                    <span>New Chat</span>
+                </a>
+                <a href="#" class="nav-item" data-section="social" data-i18n="nav_social">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Social Apps</span>
+                </a>
+                <a href="analytics.html" class="nav-item active" data-section="analytics" data-i18n="nav_analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Settings & Theme -->
+            <div class="sidebar-footer">
+                <button class="theme-toggle-btn" id="dashboardThemeToggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                    <span data-i18n="dark_mode">Dark Mode</span>
+                </button>
+                <button class="settings-btn" id="settingsBtn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                    <span data-i18n="settings">Settings</span>
+                </button>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span data-i18n="logout">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1 data-i18n="analytics_title">Analytics Dashboard</h1>
+                    <p data-i18n="analytics_subtitle">Track your social media performance</p>
+                </div>
+                <div class="header-right">
+                    <div class="date-range-selector">
+                        <button class="date-range-btn active" data-range="7d">7 Days</button>
+                        <button class="date-range-btn" data-range="30d">30 Days</button>
+                        <button class="date-range-btn" data-range="90d">90 Days</button>
+                    </div>
+                    <button class="export-btn" id="exportBtn" title="Export Report">
+                        <i class="fas fa-download"></i>
+                        <span>Export</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Analytics Content -->
+            <div class="analytics-content">
+                <!-- Stats Overview -->
+                <div class="stats-overview-grid">
+                    <div class="stat-card-large">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-value-large" id="totalMessages">1,247</p>
+                            <p class="stat-label" data-i18n="total_messages">Total Messages</p>
+                            <span class="stat-change positive">+12.5% <i class="fas fa-arrow-up"></i></span>
+                        </div>
+                    </div>
+                    <div class="stat-card-large">
+                        <div class="stat-icon green">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-value-large" id="totalContacts">3,892</p>
+                            <p class="stat-label" data-i18n="contacts">Contacts</p>
+                            <span class="stat-change positive">+8.2% <i class="fas fa-arrow-up"></i></span>
+                        </div>
+                    </div>
+                    <div class="stat-card-large">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-value-large" id="totalEngagement">45.2K</p>
+                            <p class="stat-label" data-i18n="engagement">Engagement</p>
+                            <span class="stat-change positive">+24.1% <i class="fas fa-arrow-up"></i></span>
+                        </div>
+                    </div>
+                    <div class="stat-card-large">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-value-large" id="avgResponse">2.4m</p>
+                            <p class="stat-label" data-i18n="avg_response">Avg Response</p>
+                            <span class="stat-change negative">-3.1% <i class="fas fa-arrow-down"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 data-i18n="engagement_trend">Engagement Trend</h3>
+                            <div class="chart-actions">
+                                <select id="engagementChartType" class="chart-select">
+                                    <option value="line">Line</option>
+                                    <option value="bar">Bar</option>
+                                    <option value="area">Area</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="engagementChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 data-i18n="platform_distribution">Platform Distribution</h3>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="platformChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Stats -->
+                <div class="detailed-stats-grid">
+                    <!-- Engagement by Platform -->
+                    <div class="detail-card">
+                        <h3 data-i18n="engagement_by_platform">Engagement by Platform</h3>
+                        <div class="platform-list" id="platformList">
+                            <div class="platform-item">
+                                <div class="platform-info">
+                                    <i class="fab fa-whatsapp" style="color: var(--whatsapp);"></i>
+                                    <span>WhatsApp</span>
+                                </div>
+                                <div class="platform-stats">
+                                    <span class="platform-value">847</span>
+                                    <div class="platform-bar">
+                                        <div class="platform-fill" style="width: 85%; background: var(--whatsapp);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="platform-item">
+                                <div class="platform-info">
+                                    <i class="fas fa-envelope" style="color: var(--email);"></i>
+                                    <span>Email</span>
+                                </div>
+                                <div class="platform-stats">
+                                    <span class="platform-value">624</span>
+                                    <div class="platform-bar">
+                                        <div class="platform-fill" style="width: 72%; background: var(--email);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="platform-item">
+                                <div class="platform-info">
+                                    <i class="fab fa-linkedin" style="color: var(--linkedin);"></i>
+                                    <span>LinkedIn</span>
+                                </div>
+                                <div class="platform-stats">
+                                    <span class="platform-value">512</span>
+                                    <div class="platform-bar">
+                                        <div class="platform-fill" style="width: 65%; background: var(--linkedin);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="platform-item">
+                                <div class="platform-info">
+                                    <i class="fab fa-instagram" style="color: var(--instagram);"></i>
+                                    <span>Instagram</span>
+                                </div>
+                                <div class="platform-stats">
+                                    <span class="platform-value">398</span>
+                                    <div class="platform-bar">
+                                        <div class="platform-fill" style="width: 58%; background: var(--instagram);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="platform-item">
+                                <div class="platform-info">
+                                    <i class="fab fa-twitter" style="color: var(--twitter);"></i>
+                                    <span>Twitter/X</span>
+                                </div>
+                                <div class="platform-stats">
+                                    <span class="platform-value">287</span>
+                                    <div class="platform-bar">
+                                        <div class="platform-fill" style="width: 45%; background: var(--twitter);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Performing Content -->
+                    <div class="detail-card">
+                        <h3 data-i18n="top_performing">Top Performing Content</h3>
+                        <div class="content-list" id="topContentList">
+                            <div class="content-item">
+                                <div class="content-rank">1</div>
+                                <div class="content-info">
+                                    <p class="content-title">Product Launch Announcement</p>
+                                    <p class="content-platform"><i class="fab fa-linkedin"></i> LinkedIn</p>
+                                </div>
+                                <div class="content-metrics">
+                                    <span class="content-engagement"><i class="fas fa-heart"></i> 2.4K</span>
+                                    <span class="content-date">2 days ago</span>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div class="content-rank">2</div>
+                                <div class="content-info">
+                                    <p class="content-title">Tips for Better Engagement</p>
+                                    <p class="content-platform"><i class="fab fa-instagram"></i> Instagram</p>
+                                </div>
+                                <div class="content-metrics">
+                                    <span class="content-engagement"><i class="fas fa-heart"></i> 1.8K</span>
+                                    <span class="content-date">5 days ago</span>
+                                </div>
+                            </div>
+                            <div class="content-item">
+                                <div class="content-rank">3</div>
+                                <div class="content-info">
+                                    <p class="content-title">Weekly Newsletter</p>
+                                    <p class="content-platform"><i class="fas fa-envelope"></i> Email</p>
+                                </div>
+                                <div class="content-metrics">
+                                    <span class="content-engagement"><i class="fas fa-envelope-open"></i> 1.2K</span>
+                                    <span class="content-date">1 week ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Heatmap -->
+                    <div class="detail-card heatmap-card">
+                        <h3 data-i18n="activity_heatmap">Activity Heatmap</h3>
+                        <div class="heatmap-container" id="activityHeatmap">
+                            <div class="heatmap-day">
+                                <span class="day-label">Mon</span>
+                                <div class="heatmap-hours" id="heatmapMon"></div>
+                            </div>
+                            <div class="heatmap-day">
+                                <span class="day-label">Tue</span>
+                                <div class="heatmap-hours" id="heatmapTue"></div>
+                            </div>
+                            <div class="heatmap-day">
+                                <span class="day-label">Wed</span>
+                                <div class="heatmap-hours" id="heatmapWed"></div>
+                            </div>
+                            <div class="heatmap-day">
+                                <span class="day-label">Thu</span>
+                                <div class="heatmap-hours" id="heatmapThu"></div>
+                            </div>
+                            <div class="heatmap-day">
+                                <span class="day-label">Fri</span>
+                                <div class="heatmap-hours" id="heatmapFri"></div>
+                            </div>
+                            <div class="heatmap-day">
+                                <span class="day-label">Sat</span>
+                                <div class="heatmap-hours" id="heatmapSat"></div>
+                            </div>
+                            <div class="heatmap-day">
+                                <span class="day-label">Sun</span>
+                                <div class="heatmap-hours" id="heatmapSun"></div>
+                            </div>
+                        </div>
+                        <div class="heatmap-legend">
+                            <span data-i18n="less">Less</span>
+                            <div class="legend-gradient"></div>
+                            <span data-i18n="more">More</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="settings">Settings</h2>
+                <button class="modal-close" onclick="closeModal('settingsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3 data-i18n="preferences">Preferences</h3>
+                    <div class="setting-item">
+                        <label for="notificationToggle" data-i18n="enable_notif">Enable Notifications</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="notificationToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label for="emailToggle" data-i18n="email_updates">Email Updates</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="emailToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="js/analytics.js"></script>
+</body>
+</html>
