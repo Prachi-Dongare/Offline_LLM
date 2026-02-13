@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from database import engine, get_db
+import models
 from models import Base, User
 import schemas
 import auth
@@ -11,8 +12,9 @@ from persona import extract_persona
 from chat_engine import generate_platform_message
 from auth import get_current_user
 from industry_engine import update_industry_playbook
-
-
+from analytics_engine import get_analytics_summary
+from auth import get_current_user
+from models import User
 
 app = FastAPI(title="Offline Outreach Engine")
 
@@ -45,15 +47,19 @@ def test_database():
 
 @app.post("/register", response_model=schemas.UserResponse)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    existing_user = db.query(User).filter(User.email == user.email).first()
+
+    # Normalize email
+    email = user.email.strip().lower()
+
+    existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     hashed_password = auth.hash_password(user.password)
 
     new_user = User(
-        name=user.name,
-        email=user.email,
+        name=user.name.strip(),
+        email=email,
         password_hash=hashed_password,
     )
 
@@ -65,6 +71,9 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 
+
+
+
 from fastapi.security import OAuth2PasswordRequestForm
 
 @app.post("/login", response_model=schemas.Token)
@@ -72,9 +81,13 @@ def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
+
+    # Normalize email
+    email = form_data.username.strip().lower()
+
     authenticated_user = auth.authenticate_user(
         db,
-        form_data.username,  # this will contain email
+        email,
         form_data.password
     )
 
@@ -85,7 +98,10 @@ def login(
         data={"user_id": authenticated_user.id}
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
 
 @app.get("/llm-test")
 def llm_test():
@@ -136,3 +152,19 @@ def get_industry_playbook(
         return {"message": "No outreach data available for this industry yet."}
 
     return result
+
+@app.get("/analytics")
+def analytics_summary(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    return get_analytics_summary(current_user.id, db)
+
+
+@app.get("/me")
+def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email
+    }

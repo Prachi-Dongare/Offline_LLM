@@ -172,10 +172,31 @@ document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
 });
 
-function initDashboard() {
-    // Check if user is logged in
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    if (!isLoggedIn || isLoggedIn !== 'true') {
+async function initDashboard() {
+
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+        window.location.href = 'signup.html';
+        return;
+    }
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/me', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (!response.ok) throw new Error("Unauthorized");
+
+        const user = await response.json();
+
+        localStorage.setItem('userName', user.name);
+        localStorage.setItem('userEmail', user.email);
+
+    } catch (error) {
+        localStorage.clear();
         window.location.href = 'signup.html';
         return;
     }
@@ -187,6 +208,7 @@ function initDashboard() {
     // Initialize chat
     initChat();
 }
+
 
 // ===== Navigation & Sections =====
 function setupEventListeners() {
@@ -293,15 +315,23 @@ function initChat() {
     updateLanguage();
 }
 
-function sendMessage() {
+async function sendMessage() {
     const input = document.getElementById('messageInput');
     const message = input.value.trim();
 
     if (!message) return;
 
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        showNotification("Session expired. Please login again.", "error");
+        window.location.href = "signup.html";
+        return;
+    }
+
     const messagesContainer = document.getElementById('messagesContainer');
 
-    // Add user message
+    // Add user message to UI
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'message user-message';
     userMessageDiv.innerHTML = `
@@ -314,18 +344,39 @@ function sendMessage() {
         </div>
     `;
     messagesContainer.appendChild(userMessageDiv);
-    userMessageDiv.style.animation = 'slideIn 0.3s ease forwards';
+    scrollToBottom(messagesContainer);
 
-    // Clear input
     input.value = '';
     input.style.height = 'auto';
 
-    // Simulate AI response
-    setTimeout(() => {
-        addAIMessage(generateAIResponse(message));
-    }, 800);
+    try {
+        const response = await fetch("http://127.0.0.1:8000/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                platform: "email",
+                user_input: message,
+                profile_text: ""
+            })
+        });
 
-    scrollToBottom(messagesContainer);
+        if (response.status === 401) {
+            showNotification("Session expired. Please login again.", "error");
+            localStorage.removeItem("access_token");
+            window.location.href = "signup.html";
+            return;
+        }
+
+        const data = await response.json();
+        addAIMessage(data.generated_message);
+
+    } catch (error) {
+        showNotification("Backend connection failed!", "error");
+        console.error(error);
+    }
 }
 
 function addAIMessage(message) {
@@ -465,12 +516,14 @@ function loadUserProfile() {
 // ===== Logout =====
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('currentUser');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('token_type');
         localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
         window.location.href = 'signup.html';
     }
 }
+
 
 // ===== Notification System =====
 function showNotification(message, type = 'info') {

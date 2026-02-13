@@ -6,6 +6,20 @@ from models import OutreachHistory
 from spam_checker import analyze_spam_risk
 from sqlalchemy.orm import Session
 
+def detect_intent(user_input: str):
+    text = user_input.lower()
+
+    if any(word in text for word in ["hi", "hello", "hey"]):
+        return "greeting"
+
+    if "birthday" in text:
+        return "birthday"
+
+    if "cold email" in text or "outreach" in text:
+        return "cold_outreach"
+
+    return "general"
+
 
 def generate_platform_message(
     user_id: int,
@@ -14,56 +28,106 @@ def generate_platform_message(
     profile_text: str,
     db: Session
 ):
-    # Step 1: Learn user style
+
+    # 1️⃣ Learn user style
     style_profile = build_user_style_profile(user_id, db)
 
-    # Step 2: Extract persona if profile given
+    # 2️⃣ Extract persona
     persona_data = None
     if profile_text:
         persona_data = extract_persona(profile_text)
 
-    # Step 3: Platform-specific instructions
-    platform_instruction = {
-        "email": "Write a full cold email with 3 subject lines.",
-        "whatsapp": "Write a short WhatsApp message, conversational style.",
-        "linkedin": "Write a concise LinkedIn DM (max 120 words).",
-        "instagram": "Write a friendly Instagram DM."
-    }.get(platform.lower(), "Write a professional message.")
+    # 3️⃣ Detect intent
+    intent = detect_intent(user_input)
 
+    # 4️⃣ Platform behavior rules
+    platform_rules = {
+        "email": "Professional but modern. Avoid stiff corporate tone.",
+        "whatsapp": "Conversational, short, friendly.",
+        "linkedin": "Professional but natural. Not robotic.",
+        "instagram": "Casual, engaging, slightly energetic."
+    }.get(platform.lower(), "Natural conversational response.")
+
+    # 5️⃣ Intent behavior rules
+    if intent == "greeting":
+        intent_rule = """
+Reply like a smart, friendly assistant.
+Keep it under 2 sentences.
+Use at most 1 emoji.
+Sound human and natural.
+"""
+
+    elif intent == "birthday":
+        intent_rule = """
+Write a warm, natural birthday message.
+Keep under 80 words.
+Use 2-3 emojis maximum.
+Sound personal and modern.
+"""
+
+    elif intent == "cold_outreach":
+        intent_rule = """
+Write a persuasive but concise outreach message.
+No fluff.
+No generic phrases.
+Make it specific and relevant.
+Avoid phrases like:
+- "I hope this message finds you well"
+- "Dear Sir/Madam"
+"""
+
+    else:
+        intent_rule = """
+Respond naturally and directly.
+Avoid corporate template language.
+Keep it concise unless user asks for detailed response.
+"""
+
+    # 6️⃣ Build stronger prompt
     prompt = f"""
-You are an expert outreach assistant.
+You are a high-quality conversational AI assistant.
 
-User style preferences:
-- Average length: {style_profile['avg_length']} words
-- Emoji preference: {style_profile['emoji_preference']}
-- Tone preference: {style_profile['tone_preference']}
-- CTA preference: {style_profile['cta_preference']}
+You MUST:
+- Avoid generic templates.
+- Avoid robotic tone.
+- Avoid corporate clichés.
+- Write like a real human would in 2026.
+- Keep responses engaging and natural.
+- Adapt tone based on platform.
+
+User Style Preferences:
+- Average Length: {style_profile['avg_length']}
+- Emoji Preference: {style_profile['emoji_preference']}
+- Tone: {style_profile['tone_preference']}
+- CTA Type: {style_profile['cta_preference']}
 
 Platform: {platform}
-Instruction: {platform_instruction}
+Platform Rule: {platform_rules}
 
-User request:
+Intent Rule:
+{intent_rule}
+
+User Input:
 {user_input}
 
 Persona:
-{json.dumps(persona_data, indent=2) if persona_data else "Not provided"}
+{json.dumps(persona_data, indent=2) if persona_data else "None"}
 
-Generate the message accordingly.
-Return only the final message text.
+Return ONLY the final message text.
 """
 
-    # Step 4: Generate message
+    # 7️⃣ Generate from Mistral
     message = generate_with_mistral(prompt)
 
-    # Step 5: Analyze spam risk
+    # 8️⃣ Spam Analysis
     spam_result = analyze_spam_risk(message)
 
-    # Step 6: Extract industry safely
+    # 9️⃣ Industry extraction
     industry_value = None
-    if persona_data is not None and "industry" in persona_data:
+    if persona_data and "industry" in persona_data:
         industry_value = persona_data["industry"]
 
-    # Step 7: Save to DB
+    # 🔟 Save history
     history_entry = OutreachHistory(
         user_id=user_id,
         platform=platform,
@@ -73,13 +137,12 @@ Return only the final message text.
         cta_type=style_profile["cta_preference"],
         spam_level=spam_result["spam_level"],
         message_length=len(message.split()),
-        emoji_count=0  # simple placeholder for now
+        emoji_count=message.count("😀")  # simple placeholder
     )
 
     db.add(history_entry)
     db.commit()
 
-    # Step 8: Return response
     return {
         "platform": platform,
         "style_profile_used": style_profile,

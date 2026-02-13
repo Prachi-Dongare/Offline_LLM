@@ -37,6 +37,31 @@ function updateThemeIcon(theme) {
     }
 }
 
+async function fetchAnalyticsFromBackend() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/analytics", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (!response.ok) throw new Error("Unauthorized");
+
+        const data = await response.json();
+
+        updateStatsFromBackend(data);
+        updateChartsFromBackend(data);
+        updateHeatmapFromBackend(data);
+
+    } catch (error) {
+        console.error("Analytics fetch failed:", error);
+    }
+}
+
+
 // Charts Initialization
 function initializeCharts() {
     initEngagementChart();
@@ -55,7 +80,7 @@ function initEngagementChart() {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         datasets: [{
             label: 'Messages',
-            data: [145, 189, 234, 178, 267, 123, 89],
+            data: [],
             borderColor: '#3b82f6',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
             fill: true,
@@ -152,6 +177,22 @@ function initEngagementChart() {
     }
 }
 
+function updateStatsFromBackend(data) {
+    const totalMessagesEl = document.getElementById("totalMessages");
+    const totalContactsEl = document.getElementById("totalContacts");
+    const avgResponseEl = document.getElementById("avgResponse");
+
+    if (totalMessagesEl)
+        totalMessagesEl.textContent = data.total_messages;
+
+    if (totalContactsEl)
+        totalContactsEl.textContent = Object.keys(data.platform_distribution).length;
+
+    if (avgResponseEl)
+        avgResponseEl.textContent = data.avg_message_length.toFixed(1);
+}
+
+
 function initPlatformChart() {
     const ctx = document.getElementById('platformChart');
     if (!ctx) return;
@@ -217,25 +258,44 @@ function initPlatformChart() {
     });
 }
 
+function updateChartsFromBackend(data) {
+    if (window.engagementChart) {
+        const trendLabels = data.engagement_trend.map(item => {
+    const d = new Date(item.date);
+    return d.toLocaleDateString();
+});
+
+        const trendCounts = data.engagement_trend.map(item => item.count);
+
+        window.engagementChart.data.labels = trendLabels;
+        window.engagementChart.data.datasets[0].data = trendCounts;
+        window.engagementChart.update();
+    }
+
+    if (window.platformChart) {
+        const labels = Object.keys(data.platform_distribution);
+        const values = Object.values(data.platform_distribution);
+
+        window.platformChart.data.labels = labels;
+        window.platformChart.data.datasets[0].data = values;
+        window.platformChart.update();
+    }
+}
+
+
 // Heatmap Initialization
-function initializeHeatmap() {
-    const days = ['heatmapMon', 'heatmapTue', 'heatmapWed', 'heatmapThu', 'heatmapFri', 'heatmapSat', 'heatmapSun'];
-    
-    days.forEach(dayId => {
-        const container = document.getElementById(dayId);
-        if (!container) return;
-        
-        // Create 24 hour cells (8 hours for simplicity)
-        for (let i = 0; i < 8; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'heatmap-cell';
-            const level = Math.floor(Math.random() * 6); // Random activity level 0-5
-            if (level > 0) {
-                cell.classList.add(`level-${level}`);
-            }
-            cell.title = `Hour ${i * 3}-${(i + 1) * 3}: ${Math.floor(Math.random() * 50)} activities`;
-            container.appendChild(cell);
-        }
+function updateHeatmapFromBackend(data) {
+    const heatmapData = data.activity_heatmap;
+
+    Object.keys(heatmapData).forEach(hour => {
+        const count = heatmapData[hour];
+        const level = Math.min(5, Math.max(1, count));
+
+        const cell = document.querySelector(`[data-hour="${hour}"]`);
+        if (!cell) return;
+
+        cell.classList.remove('level-1','level-2','level-3','level-4','level-5');
+        cell.classList.add(`level-${level}`);
     });
 }
 
@@ -253,32 +313,7 @@ function initializeDateRangeSelector() {
 }
 
 function updateAnalyticsData(range) {
-    // Simulate data update based on date range
-    const multipliers = {
-        '7d': 1,
-        '30d': 4,
-        '90d': 12
-    };
-    
-    const multiplier = multipliers[range] || 1;
-    
-    // Update stat values with animation
-    animateValue('totalMessages', 1247 * multiplier, true);
-    animateValue('totalContacts', 3892 * multiplier, true);
-    animateValue('totalEngagement', (45.2 * multiplier) + 'K', false);
-    
-    // Update charts
-    if (window.engagementChart) {
-        const newData = [145, 189, 234, 178, 267, 123, 89].map(v => v * multiplier);
-        window.engagementChart.data.datasets[0].data = newData;
-        window.engagementChart.update();
-    }
-    
-    if (window.platformChart) {
-        const newData = [847, 624, 512, 398, 287].map(v => v * multiplier);
-        window.platformChart.data.datasets[0].data = newData;
-        window.platformChart.update();
-    }
+    fetchAnalyticsFromBackend();
 }
 
 // Animate number values
@@ -468,4 +503,6 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'signup.html';
         });
     }
+    fetchAnalyticsFromBackend();
+
 });
