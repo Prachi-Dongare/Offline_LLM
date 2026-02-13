@@ -6,18 +6,18 @@ Unlike generic AI tools, it adapts to you.
 
 🎯 Problem
 Cold outreach today is:
-Generic
-Robotic
-Not personalized
-No analytics insights
+Generic,
+Robotic,
+Not personalized,
+No analytics insights,
 Dependent on paid APIs
 
 💡 Solution
 OutReachAI:
-Learns user communication style
-Generates platform-specific messages
-Detects spam risk
-Tracks outreach analytics
+Learns user communication style,
+Generates platform-specific messages,
+Detects spam risk,
+Tracks outreach analytics,
 Runs fully offline (no API cost)
 
 How to run :
